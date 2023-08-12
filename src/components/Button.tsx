@@ -2,7 +2,7 @@ import clsx from "clsx";
 import styles from "../styles/modules/button.module.scss";
 
 interface Props {
-  children: string;
+  children: string[] | string;
   variant: "primary" | "secondary";
   type: "button" | "submit";
   rest?: string;

@@ -1,4 +1,14 @@
 import { createSlice } from "@reduxjs/toolkit";
+export interface ITodo {
+  title: string;
+  id: string;
+  status: string;
+  time: string;
+}
+interface ITodoList {
+  todoList: ITodo[];
+  filterStatus: string;
+}
 
 const getInitialTodo = () => {
   const localTodoList = window.localStorage.getItem("todoList");
@@ -9,8 +19,9 @@ const getInitialTodo = () => {
   return [];
 };
 
-const initialState = {
+const initialState: ITodoList = {
   todoList: getInitialTodo(),
+  filterStatus: "all",
 };
 
 export const todoSlice = createSlice({
@@ -33,8 +44,39 @@ export const todoSlice = createSlice({
         );
       }
     },
+    deleteTodo: (state, action) => {
+      const todoList = window.localStorage.getItem("todoList");
+      if (todoList) {
+        const todoListArr = JSON.parse(todoList);
+        todoListArr.forEach((todo: ITodo, index: number) => {
+          if (todo.id === action.payload) {
+            todoListArr.splice(index, 1);
+          }
+        });
+        window.localStorage.setItem("todoList", JSON.stringify(todoListArr));
+        state.todoList = todoListArr;
+      }
+    },
+    updateTodo: (state, action) => {
+      const todoList = window.localStorage.getItem("todoList");
+      if (todoList) {
+        const todoListArr = JSON.parse(todoList);
+        todoListArr.forEach((todo: ITodo) => {
+          if (todo.id === action.payload.id) {
+            todo.title = action.payload.title;
+            todo.status = action.payload.status;
+          }
+        });
+        window.localStorage.setItem("todoList", JSON.stringify(todoListArr));
+        state.todoList = todoListArr;
+      }
+    },
+    updateFilterStatus: (state, action) => {
+      state.filterStatus = action.payload;
+    },
   },
 });
 
-export const { addTodo } = todoSlice.actions;
+export const { addTodo, deleteTodo, updateTodo, updateFilterStatus } =
+  todoSlice.actions;
 export default todoSlice.reducer;
